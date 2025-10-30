@@ -20,20 +20,31 @@ import java.util.List;
 /**
  * 进行数据编码
  *   这里进行数据编码
- *      数据格式 前四个字节为数据长度 后面是数据体（数据体采用压缩加密方式传输）
+ *      数据格式 前四个字节为数据长度
+ *              中间64个字节为使用RAS加密后的AES密钥的加密密文
+ *              后面是数据体（数据体采用先压缩后采用AES加密方式传输）
+ *
  */
 public class MessageEnCodec extends MessageToMessageEncoder<Message> {
     Logger logger = LoggerFactory.getLogger(MessageEnCodec.class);
+
+    // 加密AES密钥的方式
     private Encryption encryption;
 
-    public MessageEnCodec(){
-
-    }
+    /**
+     * @param encryption
+     */
     public MessageEnCodec(Encryption encryption){
         this.encryption = encryption;
     }
 
-    //
+    /**
+     * 这里是消息发送后的
+     * @param channelHandlerContext
+     * @param o
+     * @param list
+     * @throws Exception
+     */
     @Override
     protected void encode(ChannelHandlerContext channelHandlerContext, Message o, List list) throws Exception {
         //将消息体解析为JSON格式字符串
@@ -76,12 +87,10 @@ public class MessageEnCodec extends MessageToMessageEncoder<Message> {
         //消息体 -- 前四个字节为消息长度 --  中间64为AES解密的Key的密文 -- 后面是消息内容
         ByteBuf payload = ByteBufAllocator.DEFAULT.buffer( 4 + 64 + bytes.length);
 
-
         //这里消息需要加密处理
         payload.writeInt(bytes.length+64).writeBytes(encryptbytes).writeBytes(bytes);
         logger.info("message length:"+bytes.length+"messageBody:"+message);
         list.add(payload);
     }
-
-
+    
 }

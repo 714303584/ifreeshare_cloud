@@ -17,18 +17,31 @@ import org.slf4j.LoggerFactory;
 import java.nio.charset.Charset;
 import java.util.List;
 
+/**
+ * 进行消息解码
+ */
 public class MessageDeCodec extends MessageToMessageDecoder<ByteBuf> {
   Logger logger = LoggerFactory.getLogger(MessageDeCodec.class);
   private Decryption decryption;
 
-  public MessageDeCodec(){
+//  public MessageDeCodec(){
+//  }
 
-  }
-
+  /**
+   * 解密方式  -- 目前用于ras解密AES的密钥
+   * @param decryption
+   */
   public MessageDeCodec(Decryption decryption){
     this.decryption = decryption;
   }
 
+  /**
+   * 进行消息解码
+   * @param channelHandlerContext
+   * @param msg
+   * @param list
+   * @throws Exception
+   */
   @Override
   protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf msg, List<Object> list)
       throws Exception {
