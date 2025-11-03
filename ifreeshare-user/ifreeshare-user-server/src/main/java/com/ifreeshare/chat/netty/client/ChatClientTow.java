@@ -52,8 +52,8 @@ public class ChatClientTow {
 
   public static void main(String[] args) {
 
-    ChatClient chatClient = new ChatClient();
-    chatClient.init();
+      ChatClientTow chatClient = new ChatClientTow();
+      chatClient.init();
     //
   }
 
