@@ -3,9 +3,13 @@ package com.ifreeshare.chat.netty.server;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.ifreeshare.chat.client.MessageEnum;
 import com.ifreeshare.chat.mqtt.server.MqttHeartBeatBrokerHandler;
 import com.ifreeshare.chat.netty.encryption.RasDecryption;
 import com.ifreeshare.chat.netty.encryption.RasEncryption;
+import com.ifreeshare.chat.netty.server.process.LoginMessageProcessor;
+import com.ifreeshare.chat.netty.server.process.MessageProcessor;
+import com.ifreeshare.chat.netty.server.process.TextMessageProcessor;
 import com.ifreeshare.tools.PemUtils;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -50,6 +54,7 @@ public class ChatServer {
   public static   RSAPrivateKey rsaPrivateKey = null;
 
   static {
+
     //获取公钥
     try {
       rsaPublicKey = (RSAPublicKey) PemUtils.readPublicKeyFromFile(public_key_file,"RSA");
@@ -94,6 +99,10 @@ public class ChatServer {
    * 进行超时任务清理
    */
   public static void cleanClient() {
+
+    if(linkedArrayList.size() == 0){
+      return;
+    }
     //进行数据清理
     while (true){
       Clientor clientor = linkedArrayList.getFirst();
@@ -123,7 +132,14 @@ public class ChatServer {
   }
 
   /**
-   * 需要加异步获取
+   * 这里获取此用户的连接的客户端
+   *  todo 这里需要加上多服务器版本
+   *        redis记录一个用户在那台服务器上注册， 这里需要获取其他服务器上的连接的用户。
+   *        当两个用户不在一台服务器上时，需要将当前用户发送的消息进行转发到另一台服务器上。
+   *
+   *       wo -> A
+   *              |  redis --
+   *       ni -> B
    * @param clientId
    * @return
    */

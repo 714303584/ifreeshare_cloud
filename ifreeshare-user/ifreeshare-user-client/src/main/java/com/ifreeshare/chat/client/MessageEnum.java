@@ -9,7 +9,8 @@ public class MessageEnum {
         VIDEO("4","视频"),
         LOGIN("5","初始化"),
         PING("99999", "ping"), // 用于保持连接 -- 连接后需要先发ping事件
-        PONG("100000", "pong") // 用于保持连接 -- 连接后需要先发ping事件
+        PONG("100000", "pong"), // 用于保持连接 -- 连接后需要先发ping事件
+        ACK("1000001", "ping"), // 用于告知客户端 -- 此消息已被服务器接收
         ;
 
         private String code;

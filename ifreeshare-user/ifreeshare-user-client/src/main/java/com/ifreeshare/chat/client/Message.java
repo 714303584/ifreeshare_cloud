@@ -93,5 +93,14 @@ public class Message {
         message.setBody(body);
         return message;
     }
+    public static Message message(String body,String from,String to,String msgId,String messageType){
+        Message message = new Message();
+        message.setFrom(from);
+        message.setTo(to);
+        message.setMsgId(msgId);
+        message.setType(MessageEnum.Type.TEXT.getCode());
+        message.setBody(body);
+        return message;
+    }
 
 }

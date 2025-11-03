@@ -1,6 +1,8 @@
 package com.ifreeshare.chat.netty.client;
 
 
+import com.alibaba.druid.support.json.JSONUtils;
+import com.alibaba.fastjson.JSON;
 import com.ifreeshare.chat.client.Message;
 import com.ifreeshare.chat.netty.server.ChatServer;
 import com.ifreeshare.chat.netty.server.Clientor;
@@ -18,7 +20,7 @@ public class ClientMessageHandler extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg){
         logger.info("channelRegistered! name:"+ctx.name()+" channel:"+ctx.channel().id().asShortText());
         Message message = (Message) msg;
-        logger.info("channelRead:"+message.getBody());
+        logger.info("channelRead:"+ JSON.toJSONString(message));
 //        Message returnMessage = new Message();
 //        returnMessage.setFrom("server:");
 //        returnMessage.setMsgId(UUID.randomUUID().toString());

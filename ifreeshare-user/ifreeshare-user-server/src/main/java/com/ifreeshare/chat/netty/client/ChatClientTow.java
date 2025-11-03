@@ -1,8 +1,9 @@
 package com.ifreeshare.chat.netty.client;
 
-import com.auth0.jwt.algorithms.Algorithm;
 import com.ifreeshare.chat.client.Message;
 import com.ifreeshare.chat.client.MessageEnum;
+import com.ifreeshare.chat.netty.client.ChatClient;
+import com.ifreeshare.chat.netty.client.ClientMessageHandler;
 import com.ifreeshare.chat.netty.encryption.RasDecryption;
 import com.ifreeshare.chat.netty.encryption.RasEncryption;
 import com.ifreeshare.chat.netty.server.MessageDeCodec;
@@ -19,12 +20,14 @@ import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.util.Scanner;
 
 @Component
-public class ChatClient2 {
-
+public class ChatClientTow {
+ // userid = 2
+   public static final String token =
+          "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJpZnJlZXNoYXJlIiwidXNlcklkIjoiMiJ9.3kWLidCsgzR3gnqhw_Ztp5xRLlnpRd1dfBsDYEghUgH72aNzRvYQXW9ggBg2Ahlous2a7WPexy33pmrs9AaRtA";
 
 
   public static String public_key_file = "/Users/fangyuan/ifreeshare_cloud/ifreeshare-parent/ifreeshare-tools/src/main/java/com/ifreeshare/tools/public.key";
@@ -75,26 +78,61 @@ public class ChatClient2 {
 
       ChannelFuture f = b.connect(HOST, PORT).sync();
       Message messageEntity = new Message();
-      messageEntity.setFrom("eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJpZnJlZXNoYXJlIiwidXNlcklkIjoiMiJ9.3kWLidCsgzR3gnqhw_Ztp5xRLlnpRd1dfBsDYEghUgH72aNzRvYQXW9ggBg2Ahlous2a7WPexy33pmrs9AaRtA");
+      // 这里首先发消息进行注册
+      // todo 服务器端10秒未收到注册消息会立即断开
+
+         messageEntity.setFrom(token);
       messageEntity.setType(MessageEnum.Type.LOGIN.getCode());
       f.channel().write(messageEntity);
       f.channel().flush();
 
+      //消息ID
       int i = 1;
+      //这里进行控制台输入
+      Scanner scanner = new Scanner(System.in); // 创建Scanner对象
+      //这里起了一个单线程 进行保活消息的发送
+      new Thread(new Runnable() {
+        @Override
+        public void run() {
+          int z = 1;
+          while(true){
+            z++;
+            try {
+              Thread.sleep(10000);
+            } catch (InterruptedException e) {
+              e.printStackTrace();
+            }
+            Message message = new Message();
+            message.setMsgId(z+"");
+            message.setFrom(token);
+            f.channel().writeAndFlush(message);
+          }
+        }
+      }).start();
       for (;;){
-        Thread.sleep(1000);
+        //读取一条信息
+        System.out.println("请输入发送内容：");
+        String messsageText = scanner.nextLine();
+
+        //进行跳出
+        if(messsageText.equals("exit()")){
+          break;
+        }
+        //消息
         Message message2 = new Message();
-        message2.setFrom("eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJpZnJlZXNoYXJlIiwidXNlcklkIjoiMiJ9.3kWLidCsgzR3gnqhw_Ztp5xRLlnpRd1dfBsDYEghUgH72aNzRvYQXW9ggBg2Ahlous2a7WPexy33pmrs9AaRtA");
+        message2.setFrom(token);
         message2.setType(MessageEnum.Type.TEXT.getCode());
+        message2.setMsgId(i+"");
         message2.setTo("1");
-        message2.setBody("你好啊 客户端-- 我是测试小猪"+i);
+        message2.setBody(messsageText);
         f.channel().write(message2);
         f.channel().flush();
         i++;
       }
+      scanner.close(); // 关闭S消息读取信息
 
 
-//      f.channel().closeFuture().sync();
+      f.channel().closeFuture().sync();
 
     } catch (Exception exception) {
       exception.printStackTrace();

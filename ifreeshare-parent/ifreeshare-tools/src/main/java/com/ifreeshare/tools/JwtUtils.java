@@ -45,7 +45,11 @@ public class JwtUtils {
 
 
       try {
-        System.out.println(JwtUtils.getTokenData(JwtUtils.getToken("a")));
+      //        System.out.println(JwtUtils.getToken("1"));
+      //        System.out.println(JwtUtils.getToken("2"));
+      System.out.println(
+          JwtUtils.getTokenData(
+              "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJpZnJlZXNoYXJlIiwidXNlcklkIjoiMiJ9.3kWLidCsgzR3gnqhw_Ztp5xRLlnpRd1dfBsDYEghUgH72aNzRvYQXW9ggBg2Ahlous2a7WPexy33pmrs9AaRtA"));
       } catch (Exception e) {
           e.printStackTrace();
       }
@@ -127,7 +131,7 @@ public class JwtUtils {
             exception.printStackTrace();
             // Invalid signature/claims
         }
-        return null;
+        return new HashMap<String, Object>();
 
     }
 
