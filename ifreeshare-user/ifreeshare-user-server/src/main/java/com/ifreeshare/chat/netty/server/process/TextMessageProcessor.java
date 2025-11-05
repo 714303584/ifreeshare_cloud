@@ -27,7 +27,10 @@ public class TextMessageProcessor implements  MessageProcessor {
 
         //这里判断下是否有其他客户端登陆 -- 有的话进行消息分发
         if(otherClient.size() > 1){
-            //todo 进行消息分发
+              // todo 进行消息分发 -- 这里可以进行封装
+              for (Clientor clientor1 : otherClient) {
+                clientor.writeAndFlush(message);
+              }
         }
 
 
